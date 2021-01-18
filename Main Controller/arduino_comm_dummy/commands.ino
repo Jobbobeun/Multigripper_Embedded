@@ -55,28 +55,20 @@ void receivePositionsCommand(long* gripperID)
 
 /*
  * This function should send:
- * 2;IdGripper;Setpoint;Acc;Vel;Kp;Ki;Kd;LPF 
+ * 2;IdGripper;Setpoint;Kp;Ki;Kd;LPF;Acc;Vel
  * 
  * (2 is the check bit)
  */
 void receiveControllerInfoCommand(long* gripperID)
 {
-  const long DUMMY_SETPOINT = 500000; // in um?
-  const int DUMMY_TIME = 234; // time in ms!
-  const int DUMMY_POSITION = 561;
+  const long DUMMY_SETPOINT = random(400000, 500000); // in um?
+  const int DUMMY_TIME = random(0, 1000); // time in ms!
+  const int DUMMY_POSITION = random(0, 1000);
   
   Serial.print("2;"); // check byte
   Serial.print(int(*gripperID));
   Serial.print(";");
   Serial.print(DUMMY_SETPOINT);
-  Serial.print(";");
-  Serial.print(DUMMY_TIME);
-  Serial.print(";");
-  Serial.print(DUMMY_POSITION);
-  Serial.print(";");
-  Serial.print(DUMMY_ACCELERATION); // in dummy_data
-  Serial.print(";");
-  Serial.print(DUMMY_VELOCITY); // in dummy_data
 
   Serial.print(";");
   Serial.print(DUMMY_KP); 
@@ -86,6 +78,12 @@ void receiveControllerInfoCommand(long* gripperID)
   Serial.print(DUMMY_KD);
   Serial.print(";");
   Serial.print(DUMMY_LPF); 
+
+  Serial.print(";");
+  Serial.print(DUMMY_ACCELERATION); // in dummy_data
+  Serial.print(";");
+  Serial.print(DUMMY_VELOCITY); // in dummy_data
+  
   Serial.print("\n");
 }
 

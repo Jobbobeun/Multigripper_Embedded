@@ -89,7 +89,7 @@ void checkSerial() {
       }
       
       else if (identifier == "Sc") // Send controller settings function
-      { 
+      {
         int dataEnd = findNextSemicolon(data, 3); // find next semicolon
         String gripperIDText = data.substring(3, dataEnd); // take IdGripper value
         long gripperID = gripperIDText.toInt(); // type conversion
@@ -99,7 +99,7 @@ void checkSerial() {
         String KpText = data.substring(dataEnd, semicolonIndex-1); // Extract "Kp";
         long Kp = KpText.toInt(); // type conversion
         // (will be 0 if unable to convert)
-        
+
         // dataEnd value is re-used here to save precious RAM
         dataEnd = findNextSemicolon(data, semicolonIndex+1); // find next semicolon 
         String KiText = data.substring(semicolonIndex, dataEnd-1); // Extract "Ki";
@@ -159,7 +159,7 @@ int findNextSemicolon (String data, int start)
   // now loop through all characters until the next semicolon
   boolean semicolonReached = false;
   
-  while (semicolonReached == false)
+  while (semicolonReached == false && start < data.length())
   {
     if (data.charAt(start) == ';') {
       semicolonReached = true;
@@ -167,5 +167,13 @@ int findNextSemicolon (String data, int start)
     start++;
   }
 
-  return start;
+  // return -1 when no semicolon is found
+  if (semicolonReached == false) 
+  {
+    return -1;
+  }
+  else // return found semicolon index if found
+  {
+    return start;
+  }
 }

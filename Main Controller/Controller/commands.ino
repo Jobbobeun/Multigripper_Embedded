@@ -146,19 +146,28 @@ void sendStatusCommand(long* statusSignal)
  */
 void sendControllerSettingsCommand(long* gripperID, long* Kp, long* Ki, long* Kd, long* LPF, long* acc, long* vel)
 {
+  DUMMY_KP = int(*Kp);
+  DUMMY_KI = int(*Ki);
+  DUMMY_KD = int(*Kd);
+
+  DUMMY_LPF = int(*LPF);
+
+  DUMMY_ACCELERATION = int(*acc);
+  DUMMY_VELOCITY = int(*vel);
+  
   Serial.print("6;");
   Serial.print(int(*gripperID));
   Serial.print(";");
-  Serial.print(int(*Kp));
+  Serial.print(DUMMY_KP);
   Serial.print(";");
-  Serial.print(int(*Ki));
+  Serial.print(DUMMY_KI);
   Serial.print(";");
-  Serial.print(int(*Kd));
+  Serial.print(DUMMY_KD);
   Serial.print(";");
-  Serial.print(int(*LPF));
+  Serial.print(DUMMY_LPF);
   Serial.print(";");
-  Serial.print(int(*acc));
+  Serial.print(DUMMY_ACCELERATION);
   Serial.print(";");
-  Serial.print(int(*vel));
+  Serial.print(DUMMY_VELOCITY);
   Serial.print("\n");
 }

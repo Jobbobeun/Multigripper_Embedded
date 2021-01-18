@@ -1,7 +1,7 @@
 //#include "commands.ino" // File holding all commands
 
 const long BAUDRATE = 115200; // Computer <-> Arduino serial Baudrate.
-
+const int DELAY_TIME = 100; // ms
 enum SYS_STATUS { STOPPED, PAUSED, RUNNING, EMERGENCY };
 int systemStatus = STOPPED;
 

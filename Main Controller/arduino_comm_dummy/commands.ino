@@ -27,6 +27,7 @@ int DUMMY_LPF = 150; // rad/s or hz ?
 
 void receivePositionsCommand(long* gripperID)
 {
+  delay(DELAY_TIME);
   const long DUMMY_SETPOINT = 500000; // in um?
   int DUMMY_TIME = 0; // time in ms!
   int DUMMY_POSITION = 0;
@@ -61,6 +62,7 @@ void receivePositionsCommand(long* gripperID)
  */
 void receiveControllerInfoCommand(long* gripperID)
 {
+  delay(DELAY_TIME);
   const long DUMMY_SETPOINT = random(400000, 500000); // in um?
   const int DUMMY_TIME = random(0, 1000); // time in ms!
   const int DUMMY_POSITION = random(0, 1000);
@@ -115,6 +117,7 @@ void sendPositionCommand(long* gripperID, long* setpoint)
  */
 void receiveStatusCommand()
 {
+  delay(DELAY_TIME);
   Serial.print("4;");
   Serial.print(systemStatus); // in main file, integer (enum)
   Serial.print("\n");
@@ -129,6 +132,7 @@ void receiveStatusCommand()
  */
 void sendStatusCommand(long* statusSignal)
 {
+  delay(DELAY_TIME);
   systemStatus = int(*statusSignal);
   Serial.print("5;");
   Serial.print(systemStatus);
@@ -144,6 +148,7 @@ void sendStatusCommand(long* statusSignal)
  */
 void sendControllerSettingsCommand(long* gripperID, long* Kp, long* Ki, long* Kd, long* LPF, long* acc, long* vel)
 {
+  delay(DELAY_TIME);
   DUMMY_KP = int(*Kp);
   DUMMY_KI = int(*Ki);
   DUMMY_KD = int(*Kd);

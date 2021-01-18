@@ -3,7 +3,7 @@
 const long BAUDRATE = 115200; // Computer <-> Arduino serial Baudrate.
 
 enum SYS_STATUS { STOPPED, PAUSED, RUNNING, EMERGENCY };
-SYS_STATUS systemStatus = STOPPED;
+int systemStatus = STOPPED;
 
 void setup() {
   Serial.begin(BAUDRATE);
@@ -112,12 +112,23 @@ void checkSerial() {
         long Kd = KdText.toInt(); // type conversion
         // (will be 0 if unable to convert)
         
-        // The rest of the text is the LPF cutoff frequency:
-        String LPFText = data.substring(semicolonIndex, dataLength);
+        // scan for low-pass filter cutoff frequency
+        dataEnd = findNextSemicolon(data, semicolonIndex+1); // find next semicolon
+        String LPFText = data.substring(semicolonIndex, dataEnd-1);
         long LPF = LPFText.toInt(); // type conversion
         // (will be 0 if unable to convert)
 
-        sendControllerSettingsCommand(&gripperID, &Kp, &Ki, &Kd, &LPF); // in commands.ino
+        // now find the acceleration LPF cutoff frequency:
+        semicolonIndex = findNextSemicolon(data, dataEnd+1); // find next semicolon 
+        String accText = data.substring(dataEnd, semicolonIndex-1);
+        long acc = accText.toInt(); // type conversion
+        // (will be 0 if unable to convert)
+
+        // And finally the max. velocity
+        String velText = data.substring(semicolonIndex, dataLength);
+        long vel = velText.toInt(); // type conversion
+        // (will be 0 if unable to convert)
+        sendControllerSettingsCommand(&gripperID, &Kp, &Ki, &Kd, &LPF, &acc, &vel); // in commands.ino
       }
       
     } 

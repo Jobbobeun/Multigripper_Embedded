@@ -13,7 +13,7 @@ int DUMMY_LPF = 150; // rad/s or hz ?
  * This file holds the functions for making contact 
  * with the computer application. 
  * 
- * All the data is taken from dummy_data
+ * 
  */
 
 
@@ -47,7 +47,7 @@ void receivePositionsCommand(long* gripperID)
 
     // Increase every dummy "sample step"
     DUMMY_TIME++;
-    DUMMY_POSITION += 5;
+    DUMMY_POSITION = random(0, 3000);
   }
 }
 
@@ -101,6 +101,7 @@ void receiveControllerInfoCommand(long* gripperID)
  */
 void sendPositionCommand(long* gripperID, long* setpoint)
 {
+  delay(DELAY_TIME);
   Serial.print("3;");
   Serial.print(int(*gripperID));
   Serial.print(";");
@@ -110,7 +111,8 @@ void sendPositionCommand(long* gripperID, long* setpoint)
 
 /*
  * This function should send:
- * 4;Status
+ * 4;Status;Gripper1Setpoint;Gripper1Position;Gripper2Setpoint;Gripper2Position;
+ * [……]Gripper20Setpoint;Gripper20Position
  * 
  * Where status is the "echo"
  * (4 is the check bit)
@@ -120,7 +122,20 @@ void receiveStatusCommand()
   delay(DELAY_TIME);
   Serial.print("4;");
   Serial.print(systemStatus); // in main file, integer (enum)
-  Serial.print("\n");
+  
+
+  int SETPOINT = 30;
+  for(int i = 0; i < 20; i++) 
+  {
+    Serial.print(";");
+    Serial.print(SETPOINT);
+    Serial.print(";");
+    Serial.print(random(0,3000));
+    
+    SETPOINT += 20;
+  }
+
+  Serial.print("\n"); // close with newline char  
 }
 
 /*

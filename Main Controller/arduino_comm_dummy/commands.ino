@@ -3,6 +3,7 @@
  */
 int DUMMY_ACCELERATION = 2500; // mm/s^2 ?
 int DUMMY_VELOCITY = 50; // mm/s^2 ?
+long DUMMY_SETPOINT = 500000; // in um?
 
 int DUMMY_KP = 20; // mm/s^2 ?
 int DUMMY_KI = 15; // mm/s^2 ?
@@ -27,13 +28,13 @@ int DUMMY_LPF = 150; // rad/s or hz ?
 
 void receivePositionsCommand(long* gripperID)
 {
-  delay(DELAY_TIME);
-  const long DUMMY_SETPOINT = 500000; // in um?
+  delay(DELAY_TIME); // this delay is there to avoid "too quick" responses
+
   int DUMMY_TIME = 0; // time in ms!
   int DUMMY_POSITION = 0;
 
-  // Send 5000 data points, so repeat loop that many times
-  for (int i = 0; i < 5000; i++)
+  // Send 50 data points, so repeat loop that many times
+  for (int i = 0; i < 50; i++)
   {
     Serial.print("1;"); // check byte
     Serial.print(int(*gripperID));
@@ -62,7 +63,7 @@ void receivePositionsCommand(long* gripperID)
  */
 void receiveControllerInfoCommand(long* gripperID)
 {
-  delay(DELAY_TIME);
+  delay(DELAY_TIME); // this delay is there to avoid "too quick" responses
   const long DUMMY_SETPOINT = random(400000, 500000); // in um?
   const int DUMMY_TIME = random(0, 1000); // time in ms!
   const int DUMMY_POSITION = random(0, 1000);
@@ -99,14 +100,22 @@ void receiveControllerInfoCommand(long* gripperID)
  * 
  * (3 is the check bit)
  */
-void sendPositionCommand(long* gripperID, long* setpoint)
+void sendPositionCommand(long* gripperID, long* setpoint, long* acc, long* vel)
 {
-  delay(DELAY_TIME);
+  DUMMY_ACCELERATION = *acc;
+  DUMMY_VELOCITY = *vel;
+  delay(DELAY_TIME); // this delay is there to avoid "too quick" responses
+  
   Serial.print("3;");
   Serial.print(int(*gripperID));
   Serial.print(";");
   Serial.print(int(*setpoint));
+  Serial.print(";");
+  Serial.print(int(DUMMY_ACCELERATION));
+  Serial.print(";");
+  Serial.print(int(DUMMY_VELOCITY));
   Serial.print("\n");
+  
 }
 
 /*
@@ -119,7 +128,7 @@ void sendPositionCommand(long* gripperID, long* setpoint)
  */
 void receiveStatusCommand()
 {
-  delay(DELAY_TIME);
+  delay(DELAY_TIME); // this delay is there to avoid "too quick" responses
   Serial.print("4;");
   Serial.print(systemStatus); // in main file, integer (enum)
   
@@ -147,7 +156,7 @@ void receiveStatusCommand()
  */
 void sendStatusCommand(long* statusSignal)
 {
-  delay(DELAY_TIME);
+  delay(DELAY_TIME); // this delay is there to avoid "too quick" responses
   systemStatus = int(*statusSignal);
   Serial.print("5;");
   Serial.print(systemStatus);
@@ -161,17 +170,14 @@ void sendStatusCommand(long* statusSignal)
  * 
  * (6 is the check bit)
  */
-void sendControllerSettingsCommand(long* gripperID, long* Kp, long* Ki, long* Kd, long* LPF, long* acc, long* vel)
+void sendControllerSettingsCommand(long* gripperID, long* Kp, long* Ki, long* Kd, long* LPF)
 {
-  delay(DELAY_TIME);
+  delay(DELAY_TIME); // this delay is there to avoid "too quick" responses
   DUMMY_KP = int(*Kp);
   DUMMY_KI = int(*Ki);
   DUMMY_KD = int(*Kd);
 
   DUMMY_LPF = int(*LPF);
-
-  DUMMY_ACCELERATION = int(*acc);
-  DUMMY_VELOCITY = int(*vel);
   
   Serial.print("6;");
   Serial.print(int(*gripperID));
@@ -183,9 +189,5 @@ void sendControllerSettingsCommand(long* gripperID, long* Kp, long* Ki, long* Kd
   Serial.print(DUMMY_KD);
   Serial.print(";");
   Serial.print(DUMMY_LPF);
-  Serial.print(";");
-  Serial.print(DUMMY_ACCELERATION);
-  Serial.print(";");
-  Serial.print(DUMMY_VELOCITY);
   Serial.print("\n");
 }

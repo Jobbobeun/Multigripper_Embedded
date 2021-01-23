@@ -72,10 +72,34 @@ void checkSerial() {
           String gripperIDText = data.substring(3, semicolonIndex + 1); // take IdGripper value
           long gripperID = gripperIDText.toInt(); // type conversion
           // (will be 0 if unable to convert)
-  
-          String setpointText = data.substring(semicolonIndex, dataLength);
-          long setpoint = setpointText.toInt();
-          sendPositionCommand(&gripperID, &setpoint); // in commands.ino
+          
+          int dataEnd = findNextSemicolon(data, semicolonIndex+1);
+          if (dataEnd < 0) // function returns -1 in case no semicolon is found
+          {
+            error = true; // if this is the case, throw an error
+          }
+          else 
+          {
+            String setpointText = data.substring(semicolonIndex, dataEnd-1);
+            long setpoint = setpointText.toInt();
+            semicolonIndex = findNextSemicolon(data, dataEnd+1); // find next semicolon char index
+            
+            if (semicolonIndex < 0) // function returns -1 in case no semicolon is found
+            {
+              error = true; // if this is the case, throw an error
+            }
+            else 
+            {
+              String accText = data.substring(dataEnd, semicolonIndex-1);
+              long acc = accText.toInt();
+              
+              String velText = data.substring(semicolonIndex, dataLength);
+              long vel = velText.toInt();
+              
+              sendPositionCommand(&gripperID, &setpoint, &acc, &vel); // in commands.ino
+              
+            }
+          }
         }
       }
 
@@ -143,37 +167,11 @@ void checkSerial() {
                 long Kd = KdText.toInt(); // type conversion
                 // (will be 0 if unable to convert)
                 
-                // scan for low-pass filter cutoff frequency
-                dataEnd = findNextSemicolon(data, semicolonIndex+1); // find next semicolon
-                if (dataEnd < 0) // function returns -1 in case no semicolon is found
-                {
-                  error = true; // if this is the case, throw an error
-                }
-                else 
-                {
-                  String LPFText = data.substring(semicolonIndex, dataEnd-1);
-                  long LPF = LPFText.toInt(); // type conversion
-                  // (will be 0 if unable to convert)
-          
-                  // now find the acceleration LPF cutoff frequency:
-                  semicolonIndex = findNextSemicolon(data, dataEnd+1); // find next semicolon 
-                  if (semicolonIndex < 0) // function returns -1 in case no semicolon is found
-                  {
-                    error = true; // if this is the case, throw an error
-                  }
-                  else
-                  {
-                    String accText = data.substring(dataEnd, semicolonIndex-1);
-                    long acc = accText.toInt(); // type conversion
-                    // (will be 0 if unable to convert)
-            
-                    // And finally the max. velocity
-                    String velText = data.substring(semicolonIndex, dataLength);
-                    long vel = velText.toInt(); // type conversion
-                    // (will be 0 if unable to convert)
-                    sendControllerSettingsCommand(&gripperID, &Kp, &Ki, &Kd, &LPF, &acc, &vel); // in commands.ino
-                  }
-                }
+                String LPFText = data.substring(semicolonIndex, dataLength);
+                long LPF = LPFText.toInt(); // type conversion
+                // (will be 0 if unable to convert)
+                sendControllerSettingsCommand(&gripperID, &Kp, &Ki, &Kd, &LPF); // in commands.ino
+               
               }
             }
           }
@@ -192,7 +190,7 @@ void checkSerial() {
     // This is not implemented yet nevertheless
     if (error == true) 
     {
-      Serial.println("Invalid command received");
+      Serial.println("INVALID");
     }
   }
   

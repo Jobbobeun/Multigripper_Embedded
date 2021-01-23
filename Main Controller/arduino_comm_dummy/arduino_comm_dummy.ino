@@ -63,13 +63,20 @@ void checkSerial() {
       {
         int semicolonIndex = findNextSemicolon(data, 3); // find next semicolon char index
 
-        String gripperIDText = data.substring(3, semicolonIndex + 1); // take IdGripper value
-        long gripperID = gripperIDText.toInt(); // type conversion
-        // (will be 0 if unable to convert)
-
-        String setpointText = data.substring(semicolonIndex, dataLength);
-        long setpoint = setpointText.toInt();
-        sendPositionCommand(&gripperID, &setpoint); // in commands.ino
+        if (semicolonIndex < 0) // function returns -1 in case no semicolon is found
+        {
+          error = true; // if this is the case, throw an error
+        }
+        else 
+        {
+          String gripperIDText = data.substring(3, semicolonIndex + 1); // take IdGripper value
+          long gripperID = gripperIDText.toInt(); // type conversion
+          // (will be 0 if unable to convert)
+  
+          String setpointText = data.substring(semicolonIndex, dataLength);
+          long setpoint = setpointText.toInt();
+          sendPositionCommand(&gripperID, &setpoint); // in commands.ino
+        }
       }
 
       else if (identifier == "Rs") // Get status function
@@ -89,44 +96,88 @@ void checkSerial() {
       else if (identifier == "Sc") // Send controller settings function
       {
         int dataEnd = findNextSemicolon(data, 3); // find next semicolon
-        String gripperIDText = data.substring(3, dataEnd); // take IdGripper value
-        long gripperID = gripperIDText.toInt(); // type conversion
-        // (will be 0 if unable to convert)
-
-        int semicolonIndex = findNextSemicolon(data, dataEnd+1); // find next semicolon 
-        String KpText = data.substring(dataEnd, semicolonIndex-1); // Extract "Kp";
-        long Kp = KpText.toInt(); // type conversion
-        // (will be 0 if unable to convert)
-
-        // dataEnd value is re-used here to save precious RAM
-        dataEnd = findNextSemicolon(data, semicolonIndex+1); // find next semicolon 
-        String KiText = data.substring(semicolonIndex, dataEnd-1); // Extract "Ki";
-        long Ki = KiText.toInt(); // type conversion
-        // (will be 0 if unable to convert)
         
-        // semicolonIndex value is re-used too
-        semicolonIndex = findNextSemicolon(data, dataEnd+1); // find next semicolon 
-        String KdText = data.substring(dataEnd, semicolonIndex-1); // Extract "Ki";
-        long Kd = KdText.toInt(); // type conversion
-        // (will be 0 if unable to convert)
-        
-        // scan for low-pass filter cutoff frequency
-        dataEnd = findNextSemicolon(data, semicolonIndex+1); // find next semicolon
-        String LPFText = data.substring(semicolonIndex, dataEnd-1);
-        long LPF = LPFText.toInt(); // type conversion
-        // (will be 0 if unable to convert)
-
-        // now find the acceleration LPF cutoff frequency:
-        semicolonIndex = findNextSemicolon(data, dataEnd+1); // find next semicolon 
-        String accText = data.substring(dataEnd, semicolonIndex-1);
-        long acc = accText.toInt(); // type conversion
-        // (will be 0 if unable to convert)
-
-        // And finally the max. velocity
-        String velText = data.substring(semicolonIndex, dataLength);
-        long vel = velText.toInt(); // type conversion
-        // (will be 0 if unable to convert)
-        sendControllerSettingsCommand(&gripperID, &Kp, &Ki, &Kd, &LPF, &acc, &vel); // in commands.ino
+        if (dataEnd < 0) // function returns -1 in case no semicolon is found
+        {
+          error = true; // if this is the case, throw an error
+        }
+        else 
+        {
+          String gripperIDText = data.substring(3, dataEnd); // take IdGripper value
+          long gripperID = gripperIDText.toInt(); // type conversion
+          // (will be 0 if unable to convert)
+  
+          int semicolonIndex = findNextSemicolon(data, dataEnd+1); // find next semicolon 
+          
+          if (semicolonIndex < 0) // function returns -1 in case no semicolon is found
+          {
+            error = true; // if this is the case, throw an error
+          }
+          else
+          {
+            String KpText = data.substring(dataEnd, semicolonIndex-1); // Extract "Kp";
+            long Kp = KpText.toInt(); // type conversion
+            // (will be 0 if unable to convert)
+    
+            // dataEnd value is re-used here to save precious RAM
+            dataEnd = findNextSemicolon(data, semicolonIndex+1); // find next semicolon 
+            if (dataEnd < 0) // function returns -1 in case no semicolon is found
+            {
+              error = true; // if this is the case, throw an error
+            }
+            else 
+            {
+              String KiText = data.substring(semicolonIndex, dataEnd-1); // Extract "Ki";
+              long Ki = KiText.toInt(); // type conversion
+              // (will be 0 if unable to convert)
+              
+              // semicolonIndex value is re-used too
+              semicolonIndex = findNextSemicolon(data, dataEnd+1); // find next semicolon 
+              if (semicolonIndex < 0) // function returns -1 in case no semicolon is found
+              {
+                error = true; // if this is the case, throw an error
+              }
+              else
+              {
+                String KdText = data.substring(dataEnd, semicolonIndex-1); // Extract "Ki";
+                long Kd = KdText.toInt(); // type conversion
+                // (will be 0 if unable to convert)
+                
+                // scan for low-pass filter cutoff frequency
+                dataEnd = findNextSemicolon(data, semicolonIndex+1); // find next semicolon
+                if (dataEnd < 0) // function returns -1 in case no semicolon is found
+                {
+                  error = true; // if this is the case, throw an error
+                }
+                else 
+                {
+                  String LPFText = data.substring(semicolonIndex, dataEnd-1);
+                  long LPF = LPFText.toInt(); // type conversion
+                  // (will be 0 if unable to convert)
+          
+                  // now find the acceleration LPF cutoff frequency:
+                  semicolonIndex = findNextSemicolon(data, dataEnd+1); // find next semicolon 
+                  if (semicolonIndex < 0) // function returns -1 in case no semicolon is found
+                  {
+                    error = true; // if this is the case, throw an error
+                  }
+                  else
+                  {
+                    String accText = data.substring(dataEnd, semicolonIndex-1);
+                    long acc = accText.toInt(); // type conversion
+                    // (will be 0 if unable to convert)
+            
+                    // And finally the max. velocity
+                    String velText = data.substring(semicolonIndex, dataLength);
+                    long vel = velText.toInt(); // type conversion
+                    // (will be 0 if unable to convert)
+                    sendControllerSettingsCommand(&gripperID, &Kp, &Ki, &Kd, &LPF, &acc, &vel); // in commands.ino
+                  }
+                }
+              }
+            }
+          }
+        }
       }
       
     } 

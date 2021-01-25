@@ -64,7 +64,6 @@ void receivePositionsCommand(long* gripperID)
 void receiveControllerInfoCommand(long* gripperID)
 {
   delay(DELAY_TIME); // this delay is there to avoid "too quick" responses
-  const long DUMMY_SETPOINT = random(400000, 500000); // in um?
   const int DUMMY_TIME = random(0, 1000); // time in ms!
   const int DUMMY_POSITION = random(0, 1000);
   
@@ -104,12 +103,13 @@ void sendPositionCommand(long* gripperID, long* setpoint, long* acc, long* vel)
 {
   DUMMY_ACCELERATION = *acc;
   DUMMY_VELOCITY = *vel;
+  DUMMY_SETPOINT = *setpoint;
   delay(DELAY_TIME); // this delay is there to avoid "too quick" responses
   
   Serial.print("3;");
   Serial.print(int(*gripperID));
   Serial.print(";");
-  Serial.print(int(*setpoint));
+  Serial.print(int(DUMMY_SETPOINT));
   Serial.print(";");
   Serial.print(int(DUMMY_ACCELERATION));
   Serial.print(";");
